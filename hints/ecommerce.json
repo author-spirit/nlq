@@ -1,0 +1,429 @@
+{
+  "label": "Online shop",
+  "description": "Synthetic e-commerce database. Amounts are in the orders.currency of that order.",
+  "tables": {
+    "customers": {
+      "description": "One row per customer.",
+      "row_count": 26000,
+      "columns": {
+        "customer_id": {
+          "note": "",
+          "samples": []
+        },
+        "first_name": {
+          "note": "",
+          "samples": []
+        },
+        "last_name": {
+          "note": "",
+          "samples": []
+        },
+        "email": {
+          "note": "",
+          "samples": []
+        },
+        "phone": {
+          "note": "",
+          "samples": []
+        },
+        "country": {
+          "note": "",
+          "samples": [
+            "United States",
+            "United Kingdom",
+            "Germany",
+            "Canada",
+            "France",
+            "Australia",
+            "Netherlands",
+            "Italy",
+            "Spain",
+            "Sweden"
+          ]
+        },
+        "city": {
+          "note": "",
+          "samples": []
+        },
+        "signup_date": {
+          "note": "",
+          "samples": [
+            "2021-06-01",
+            "2023-12-30"
+          ]
+        },
+        "loyalty_tier": {
+          "note": "none means the customer is not enrolled. Other values are membership levels.",
+          "samples": [
+            "none",
+            "silver",
+            "gold",
+            "platinum"
+          ]
+        },
+        "marketing_opt_in": {
+          "note": "1 if the customer opted in to marketing, else 0.",
+          "samples": []
+        }
+      }
+    },
+    "order_items": {
+      "description": "One row per product line on an order.",
+      "row_count": 200000,
+      "columns": {
+        "order_item_id": {
+          "note": "",
+          "samples": []
+        },
+        "order_id": {
+          "note": "",
+          "samples": []
+        },
+        "product_id": {
+          "note": "",
+          "samples": []
+        },
+        "quantity": {
+          "note": "",
+          "samples": []
+        },
+        "unit_price": {
+          "note": "",
+          "samples": []
+        },
+        "line_total": {
+          "note": "quantity times unit_price for this line.",
+          "samples": []
+        }
+      }
+    },
+    "orders": {
+      "description": "One row per order.",
+      "row_count": 90000,
+      "columns": {
+        "order_id": {
+          "note": "",
+          "samples": []
+        },
+        "customer_id": {
+          "note": "",
+          "samples": []
+        },
+        "order_date": {
+          "note": "",
+          "samples": [
+            "2024-01-01 00:08:26",
+            "2026-09-29 23:22:24"
+          ]
+        },
+        "status": {
+          "note": "Order lifecycle. Distinct from payments.status and shipments.status.",
+          "samples": [
+            "delivered",
+            "returned",
+            "cancelled",
+            "shipped",
+            "processing"
+          ]
+        },
+        "channel": {
+          "note": "",
+          "samples": [
+            "web",
+            "app",
+            "marketplace",
+            "store"
+          ]
+        },
+        "subtotal": {
+          "note": "",
+          "samples": []
+        },
+        "discount_amount": {
+          "note": "",
+          "samples": []
+        },
+        "shipping_fee": {
+          "note": "",
+          "samples": []
+        },
+        "tax_amount": {
+          "note": "",
+          "samples": []
+        },
+        "total_amount": {
+          "note": "subtotal - discount_amount + shipping_fee + tax_amount, in currency.",
+          "samples": []
+        },
+        "currency": {
+          "note": "",
+          "samples": [
+            "USD"
+          ]
+        }
+      }
+    },
+    "payments": {
+      "description": "One row per payment attempt for an order.",
+      "row_count": 90000,
+      "columns": {
+        "payment_id": {
+          "note": "",
+          "samples": []
+        },
+        "order_id": {
+          "note": "",
+          "samples": []
+        },
+        "method": {
+          "note": "",
+          "samples": [
+            "card",
+            "paypal",
+            "apple_pay",
+            "google_pay",
+            "klarna",
+            "bank_transfer"
+          ]
+        },
+        "amount": {
+          "note": "",
+          "samples": []
+        },
+        "paid_at": {
+          "note": "",
+          "samples": [
+            "2024-01-01 00:08:26",
+            "2026-09-29 23:22:24"
+          ]
+        },
+        "status": {
+          "note": "Payment status. Distinct from orders.status.",
+          "samples": [
+            "captured",
+            "refunded",
+            "failed"
+          ]
+        }
+      }
+    },
+    "products": {
+      "description": "One row per product.",
+      "row_count": 1500,
+      "columns": {
+        "product_id": {
+          "note": "",
+          "samples": []
+        },
+        "sku": {
+          "note": "",
+          "samples": []
+        },
+        "product_name": {
+          "note": "",
+          "samples": []
+        },
+        "category": {
+          "note": "",
+          "samples": [
+            "Accessories",
+            "Apparel",
+            "Footwear",
+            "Tents",
+            "Climbing",
+            "Cooking",
+            "Backpacks",
+            "Lighting",
+            "Navigation",
+            "Sleeping Bags"
+          ]
+        },
+        "brand": {
+          "note": "",
+          "samples": [
+            "Kestrel & Co",
+            "Ravenridge",
+            "Wildhaven",
+            "Larkspur",
+            "Cairnworks",
+            "Ironwood Trail",
+            "Bluecrest",
+            "Northpeak",
+            "Halden",
+            "Tarn Outfitters"
+          ]
+        },
+        "unit_price": {
+          "note": "",
+          "samples": []
+        },
+        "unit_cost": {
+          "note": "Seller cost. unit_price is the list price.",
+          "samples": []
+        },
+        "weight_kg": {
+          "note": "",
+          "samples": []
+        },
+        "is_active": {
+          "note": "1 if the product is still sold, else 0.",
+          "samples": []
+        },
+        "created_at": {
+          "note": "",
+          "samples": [
+            "2021-01-01",
+            "2023-12-29"
+          ]
+        }
+      }
+    },
+    "returns": {
+      "description": "One row per returned order line.",
+      "row_count": 8000,
+      "columns": {
+        "return_id": {
+          "note": "",
+          "samples": []
+        },
+        "order_item_id": {
+          "note": "",
+          "samples": []
+        },
+        "reason": {
+          "note": "",
+          "samples": [
+            "wrong_size",
+            "changed_mind",
+            "not_as_described",
+            "damaged",
+            "arrived_late"
+          ]
+        },
+        "refund_amount": {
+          "note": "",
+          "samples": []
+        },
+        "requested_at": {
+          "note": "",
+          "samples": [
+            "2024-01-04 00:00:00",
+            "2026-09-20 00:00:00"
+          ]
+        },
+        "status": {
+          "note": "",
+          "samples": [
+            "refunded",
+            "approved",
+            "requested",
+            "rejected"
+          ]
+        }
+      }
+    },
+    "shipments": {
+      "description": "One row per shipment. Some orders have no shipment.",
+      "row_count": 83885,
+      "columns": {
+        "shipment_id": {
+          "note": "",
+          "samples": []
+        },
+        "order_id": {
+          "note": "",
+          "samples": []
+        },
+        "carrier": {
+          "note": "",
+          "samples": [
+            "UPS",
+            "FedEx",
+            "DHL",
+            "USPS",
+            "Royal Mail",
+            "DPD",
+            "Canada Post"
+          ]
+        },
+        "tracking_number": {
+          "note": "",
+          "samples": []
+        },
+        "shipped_at": {
+          "note": "",
+          "samples": [
+            "2024-01-02 00:00:00",
+            "2026-09-30 00:00:00"
+          ]
+        },
+        "delivered_at": {
+          "note": "Empty when the shipment has not been delivered.",
+          "samples": [
+            "2024-01-04 00:00:00",
+            "2026-09-30 00:00:00"
+          ]
+        },
+        "status": {
+          "note": "",
+          "samples": [
+            "delivered",
+            "in_transit"
+          ]
+        }
+      }
+    }
+  },
+  "links": [
+    {
+      "primary_key": "orders.order_id",
+      "foreign_key": "order_items.order_id",
+      "status": "declared",
+      "confidence": 1.0,
+      "reason": "declared",
+      "needs_review": false
+    },
+    {
+      "primary_key": "products.product_id",
+      "foreign_key": "order_items.product_id",
+      "status": "declared",
+      "confidence": 1.0,
+      "reason": "declared",
+      "needs_review": false
+    },
+    {
+      "primary_key": "customers.customer_id",
+      "foreign_key": "orders.customer_id",
+      "status": "declared",
+      "confidence": 1.0,
+      "reason": "declared",
+      "needs_review": false
+    },
+    {
+      "primary_key": "orders.order_id",
+      "foreign_key": "payments.order_id",
+      "status": "declared",
+      "confidence": 1.0,
+      "reason": "declared",
+      "needs_review": false
+    },
+    {
+      "primary_key": "order_items.order_item_id",
+      "foreign_key": "returns.order_item_id",
+      "status": "declared",
+      "confidence": 1.0,
+      "reason": "declared",
+      "needs_review": false
+    },
+    {
+      "primary_key": "orders.order_id",
+      "foreign_key": "shipments.order_id",
+      "status": "declared",
+      "confidence": 1.0,
+      "reason": "declared",
+      "needs_review": false
+    }
+  ],
+  "generated_at": "2026-11-07T03:42:43Z",
+  "src": "https://www.kaggle.com/datasets/generaterealdata/synthetic-ecommerce-database"
+}

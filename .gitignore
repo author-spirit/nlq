@@ -1,0 +1,56 @@
+# Secrets and local env
+.env
+.env.*
+env.local
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# Editor / agent
+.cursor/
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Runtime / generated databases
+data/duckdb/
+data/sqlite/
+data/mysql/
+data/postgres/
+data/*.zip
+
+recommendations/*
+!recommendations/ecommerce.json
+
+hints/*
+!hints/ecommerce.json
+
+# Local dataset registry (recreated by import / start)
+# Keep a clean empty file in git via data/datasets.json = {}
+# but ignore accidental local overrides if renamed:
+data/datasets.local.json
+
+# Large offline sample dumps (not for GitHub)
+fixtures/*
+!fixtures/garage/
+
+
+# Logs / coverage
+*.log
+.coverage
+htmlcov/

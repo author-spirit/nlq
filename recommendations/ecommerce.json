@@ -1,0 +1,22 @@
+[
+  {
+    "question": "How many orders are there for each status?",
+    "sql": "SELECT status, count(*) AS order_count FROM orders GROUP BY status ORDER BY order_count DESC"
+  },
+  {
+    "question": "What is the total revenue by product category?",
+    "sql": "SELECT p.category, sum(oi.line_total) AS revenue FROM order_items AS oi JOIN products AS p ON p.product_id = oi.product_id GROUP BY p.category ORDER BY revenue DESC"
+  },
+  {
+    "question": "Who are the top 10 customers by total order amount?",
+    "sql": "SELECT c.customer_id, c.first_name, c.last_name, sum(o.total_amount) AS total_spent FROM customers AS c JOIN orders AS o ON o.customer_id = c.customer_id GROUP BY c.customer_id, c.first_name, c.last_name ORDER BY total_spent DESC LIMIT 10"
+  },
+  {
+    "question": "How many returns are there for each reason?",
+    "sql": "SELECT reason, count(*) AS return_count FROM returns GROUP BY reason ORDER BY return_count DESC"
+  },
+  {
+    "question": "What was the monthly order revenue in 2025?",
+    "sql": "SELECT date_trunc('month', order_date) AS month, sum(total_amount) AS revenue FROM orders WHERE order_date >= TIMESTAMP '2025-01-01' AND order_date < TIMESTAMP '2026-01-01' GROUP BY 1 ORDER BY 1"
+  }
+]

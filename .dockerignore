@@ -1,0 +1,15 @@
+.git
+.venv
+.cursor
+cpython
+.env
+.env.*
+**/__pycache__
+.pytest_cache
+data/duckdb
+data/sqlite
+data/mysql
+data/postgres
+data/*.zip
+fixtures/hnm
+*.log
