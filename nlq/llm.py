@@ -125,8 +125,10 @@ def _log_response(provider: str, model: str, status: int, text: str, *, error: b
 
 
 def _post(provider: str, model: str, url: str, headers: dict, body: dict) -> str:
+    # Local Ollama can need several minutes on CPU for a full schema prompt.
+    timeout = 300 if provider == "locallama" else 120
     try:
-        response = httpx.post(url, headers=headers, json=body, timeout=120)
+        response = httpx.post(url, headers=headers, json=body, timeout=timeout)
     except httpx.HTTPError as exc:
         logger.error("llm provider=%s model=%s request failed: %s", provider, model, exc)
         raise LLMError(f"LLM request failed: {exc}") from exc

@@ -92,7 +92,7 @@ History retention: Settings → History (default 30 days). Stored in `data/sqlit
 - Analytics DuckDB is read-only, external access off, memory limit set.
 - Guard allows one `SELECT` or `WITH ... SELECT` and blocks words such as `ATTACH`, `COPY`, `read_csv`.
 - `EXPLAIN` before run. Query timeout 15s. Row cap 1000.
-- LLM sees schema and sample values only.
+- LLM sees schema plus curated samples from `hints/<id>.json` only (not live row scans). Result rows never go to the model.
 
 ## Limits
 

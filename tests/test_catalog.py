@@ -21,8 +21,10 @@ def test_prompt_lists_foreign_keys(info):
         assert link in text
 
 
-def test_prompt_includes_a_real_status_value(info):
+def test_prompt_includes_hint_status_samples(info):
+    # From hints/ecommerce.json columns.orders.status.samples — not a live DB scan.
     assert "'delivered'" in info.prompt_text
+    assert "<<<SAMPLE_VALUES>>>" in info.prompt_text
 
 
 def test_schema_answer_has_no_sample_values(info):

@@ -58,7 +58,7 @@ Original sketch: [img/initial-design.png](img/initial-design.png). That design u
 
 ## Catalog text in every SQL prompt
 
-`catalog.load` builds the schema block from DuckDB plus `hints/<id>.json` (description, confirmed/guessed/declared links, samples). Shape:
+`catalog.load` builds the schema block from DuckDB metadata plus `hints/<id>.json` (description, confirmed/guessed/declared links, curated samples). Sample values and date ranges in the prompt come **only from hints** (written offline by import/profile or edited by hand) — live row values are never queried for the LLM. Shape:
 
 ```text
 -- <dataset description>

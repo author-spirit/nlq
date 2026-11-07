@@ -3,18 +3,15 @@
 from __future__ import annotations
 
 import json
-import re
 from dataclasses import dataclass, field
 
 from nlq import db
 
 HINTS_DIR = db.HINTS_DIR
 HINTS_PATH = db.HINTS_PATH
-LOW_CARDINALITY_MAX = 50
 SAMPLE_LIMIT = 10
 SAMPLE_BEGIN = "<<<SAMPLE_VALUES>>>"
 SAMPLE_END = "<<<END_SAMPLE_VALUES>>>"
-TEXT_TYPES = {"VARCHAR", "TEXT", "CHAR", "STRING"}
 DATE_TYPES = {"DATE", "TIMESTAMP", "TIMESTAMP WITH TIME ZONE", "TIMESTAMP_NS"}
 ACTIVE_LINK_STATUSES = {"declared", "guessed", "confirmed"}
 
@@ -140,16 +137,12 @@ def build(database: str = "ecommerce") -> Catalog:
         constraints = db.fetch_constraints(con)
         keys, references = _keys(constraints)
         tables = _tables(columns, keys, references, hints)
-        samples = _samples(con, tables)
-        ranges = _date_ranges(con, tables)
     finally:
         con.close()
-    for table in tables:
-        for column in table.columns:
-            span = ranges.get((table.name, column.name))
-            if span:
-                note = f"range {span[0]} .. {span[1]}"
-                column.comment = f"{column.comment}; {note}" if column.comment else note
+    # Prompt samples/ranges come only from hints/<id>.json (curated / profiled offline).
+    # Live row values are never queried for the LLM prompt.
+    _apply_hint_date_ranges(tables, hints)
+    samples = _hint_samples(hints, tables)
     links = _active_links(hints.get("links", []), references)
     prompt = _prompt_text(hints.get("description", ""), tables, samples, links)
     return Catalog(
@@ -273,46 +266,58 @@ def _tables(columns, primary, references, hints: dict) -> list[Table]:
     return [grouped[name] for name in sorted(grouped)]
 
 
-def _samples(con, tables: list[Table]) -> list[tuple[str, str, list[str]]]:
+def _hint_column_meta(hints: dict, table_name: str, column_name: str) -> dict:
+    tables = hints.get("tables", {})
+    if not isinstance(tables, dict):
+        return {}
+    table = tables.get(table_name, {})
+    if not isinstance(table, dict):
+        return {}
+    columns = table.get("columns", {})
+    if not isinstance(columns, dict):
+        return {}
+    meta = columns.get(column_name, {})
+    return meta if isinstance(meta, dict) else {}
+
+
+def _hint_sample_list(meta: dict) -> list[str]:
+    raw = meta.get("samples") or []
+    if not isinstance(raw, list):
+        return []
+    values = []
+    for item in raw[:SAMPLE_LIMIT]:
+        if item is None:
+            continue
+        text = _clean_sample(item)
+        if text:
+            values.append(text)
+    return values
+
+
+def _hint_samples(hints: dict, tables: list[Table]) -> list[tuple[str, str, list[str]]]:
+    """Categorical samples for the prompt — from hints only, never live rows."""
     found = []
     for table in tables:
         for column in table.columns:
-            if column.type.upper() not in TEXT_TYPES:
+            if column.type.upper() in DATE_TYPES:
                 continue
-            ident = _ident(table.name)
-            column_ident = _ident(column.name)
-            rows = con.execute(
-                f"""
-                SELECT {column_ident} AS value, count(*) AS n
-                FROM {ident}
-                WHERE {column_ident} IS NOT NULL
-                GROUP BY 1
-                ORDER BY n DESC
-                LIMIT {LOW_CARDINALITY_MAX + 1}
-                """
-            ).fetchall()
-            if not rows or len(rows) > LOW_CARDINALITY_MAX:
-                continue
-            values = [_clean_sample(row[0]) for row in rows[:SAMPLE_LIMIT]]
-            found.append((table.name, column.name, values))
+            values = _hint_sample_list(_hint_column_meta(hints, table.name, column.name))
+            if values:
+                found.append((table.name, column.name, values))
     return found
 
 
-def _date_ranges(con, tables: list[Table]) -> dict[tuple[str, str], tuple[str, str]]:
-    ranges = {}
+def _apply_hint_date_ranges(tables: list[Table], hints: dict) -> None:
+    """Attach min/max range notes from hints date samples (offline profile)."""
     for table in tables:
         for column in table.columns:
             if column.type.upper() not in DATE_TYPES:
                 continue
-            ident = _ident(table.name)
-            column_ident = _ident(column.name)
-            low, high = con.execute(
-                f"SELECT min({column_ident}), max({column_ident}) FROM {ident}"
-            ).fetchone()
-            if low is None or high is None:
+            values = _hint_sample_list(_hint_column_meta(hints, table.name, column.name))
+            if len(values) < 2:
                 continue
-            ranges[(table.name, column.name)] = (_plain(low), _plain(high))
-    return ranges
+            note = f"range {values[0]} .. {values[-1]}"
+            column.comment = f"{column.comment}; {note}" if column.comment else note
 
 
 def _prompt_text(description: str, tables: list[Table], samples, links: list[dict]) -> str:
@@ -353,19 +358,7 @@ def _prompt_text(description: str, tables: list[Table], samples, links: list[dic
     return "\n".join(lines)
 
 
-def _ident(name: str) -> str:
-    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", name):
-        raise ValueError(f"Unexpected identifier: {name}")
-    return '"' + name + '"'
-
-
 def _clean_sample(value: str) -> str:
     text = str(value).replace("\n", " ").replace("\r", " ")
     text = text.replace(SAMPLE_BEGIN, "").replace(SAMPLE_END, "")
     return text.strip()
-
-
-def _plain(value) -> str:
-    if hasattr(value, "isoformat"):
-        return value.isoformat(sep=" ") if hasattr(value, "hour") else value.isoformat()
-    return str(value)
